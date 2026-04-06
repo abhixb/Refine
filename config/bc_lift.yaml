@@ -1,0 +1,13 @@
+task: lift
+data_path: datasets/lift/ph/low_dim_v141.hdf5
+save_dir: checkpoints/bc/lift
+pred_horizon: 4
+diffusion_steps: 100
+hidden_dims: [1024, 1024, 1024]
+epochs: 3000
+batch_size: 256
+lr: 1.0e-4
+weight_decay: 1.0e-6
+ema_decay: 0.995
+log_every: 50
+save_every: 500

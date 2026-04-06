@@ -1,0 +1,10 @@
+action_magnitude: 1.5
+ddim_steps: 10
+episodes: 200
+lr: 3.0e-4
+batch_size: 256
+buffer_size: 100000
+gamma: 0.99
+utd: 20
+actor_width: 2048
+actor_depth: 3

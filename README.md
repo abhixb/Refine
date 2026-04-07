@@ -16,6 +16,12 @@ Diffusion BC alone:
 
 Evaluated over 20 episodes per task with DDIM (10 steps), `pred_horizon=4`.
 
+Sample rollouts in `videos/`:
+
+| Lift | Can | Square |
+|------|-----|--------|
+| [ep01](videos/lift_ep01_success.mp4) / [ep03](videos/lift_ep03_success.mp4) | [ep01](videos/can_ep01_success.mp4) / [ep02](videos/can_ep02_success.mp4) / [ep03](videos/can_ep03_success.mp4) | [ep01](videos/square_ep01_success.mp4) / [ep02](videos/square_ep02_success.mp4) / [ep03](videos/square_ep03_success.mp4) |
+
 ## Layout
 
 ```

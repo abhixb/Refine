@@ -11,7 +11,7 @@ from model.diffusion import DiffusionPolicy
 def train(args):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    dataset = RoboMimicDataset(args.data_path, pred_horizon=args.pred_horizon)
+    dataset = RoboMimicDataset(args.data_path, pred_horizon=args.pred_horizon, hold_steps=args.hold_steps)
     loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True,
                         num_workers=4, pin_memory=True, drop_last=True)
 
@@ -79,6 +79,10 @@ if __name__ == "__main__":
     parser.add_argument("--save_dir", type=str, default="checkpoints/bc")
     parser.add_argument("--task", type=str, default="lift")
     parser.add_argument("--pred_horizon", type=int, default=4)
+    parser.add_argument("--hold_steps", type=int, default=16,
+                        help="repeat each demo's last frame this many times before chunking, "
+                             "with pose-delta zeroed and gripper held; teaches the policy to "
+                             "settle at goal states instead of thrashing OOD post-success")
     parser.add_argument("--diffusion_steps", type=int, default=100)
     parser.add_argument("--hidden_dims", type=int, nargs="+", default=[1024, 1024, 1024])
     parser.add_argument("--epochs", type=int, default=3000)

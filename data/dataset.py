@@ -21,7 +21,7 @@ def detect_obs_keys(hdf5_path):
     return SINGLE_ARM_OBS_KEYS
 
 
-def load_robomimic_hdf5(path, pred_horizon=4, obs_keys=None):
+def load_robomimic_hdf5(path, pred_horizon=4, obs_keys=None, hold_steps=0):
     if obs_keys is None:
         obs_keys = detect_obs_keys(path)
 
@@ -36,6 +36,14 @@ def load_robomimic_hdf5(path, pred_horizon=4, obs_keys=None):
             obs = np.concatenate(obs_parts, axis=-1)
             actions = demo["actions"][:]
 
+            if hold_steps > 0:
+                obs = np.concatenate([obs, np.tile(obs[-1:], (hold_steps, 1))], axis=0)
+                hold_action = actions[-1:].copy()
+                n_arms = hold_action.shape[1] // 7
+                for i in range(n_arms):
+                    hold_action[:, i * 7 : i * 7 + 6] = 0.0
+                actions = np.concatenate([actions, np.tile(hold_action, (hold_steps, 1))], axis=0)
+
             T = actions.shape[0]
             for t in range(T - pred_horizon + 1):
                 obs_chunks.append(obs[t])
@@ -47,8 +55,10 @@ def load_robomimic_hdf5(path, pred_horizon=4, obs_keys=None):
 
 
 class RoboMimicDataset(Dataset):
-    def __init__(self, hdf5_path, pred_horizon=4):
-        obs_raw, action_raw, self.obs_keys = load_robomimic_hdf5(hdf5_path, pred_horizon)
+    def __init__(self, hdf5_path, pred_horizon=4, hold_steps=0):
+        obs_raw, action_raw, self.obs_keys = load_robomimic_hdf5(
+            hdf5_path, pred_horizon, hold_steps=hold_steps
+        )
         self.obs_normalizer = MinMaxNormalizer(obs_raw)
         self.action_normalizer = MinMaxNormalizer(action_raw)
         self.obs = self.obs_normalizer.normalize(obs_raw).astype(np.float32)

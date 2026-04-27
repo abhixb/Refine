@@ -14,11 +14,16 @@ A diffusion policy trained with BC on demonstrations, predicting short action ch
 
 Evaluated over 20 episodes per task with DDIM (10 steps), `pred_horizon=4`.
 
-Sample rollouts:
+Sample rollouts (policy executes the task, then a P-controller returns the eef to home so episodes end cleanly instead of thrashing OOD):
 
 | Can | Square |
 |-----|--------|
 | ![Can](videos/can.gif) | ![Square](videos/square.gif) |
+
+End-effector trajectory and distance-to-home over a single episode. Policy phase in blue, post-success go-home phase in red, success step marked in orange:
+
+![Can rollout](figures/can_rollout.png)
+![Square rollout](figures/square_rollout.png)
 
 ## Layout
 
@@ -28,7 +33,8 @@ data/           Robomimic hdf5 loader and min-max normalizer
 model/          diffusion policy (MLP epsilon predictor, EMA, DDIM sampler)
 train_bc.py     BC pretraining of the diffusion policy
 evaluate.py     rollout the BC diffusion policy
-record_eval.py  same, with video recording
+record_eval.py  same, with video recording + go-home on success
+plot.py         single-episode trajectory + distance-to-home figure
 ```
 
 ## Training

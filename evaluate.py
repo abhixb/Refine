@@ -58,7 +58,10 @@ def evaluate(args):
     policy.eval()
 
     obs_keys = ckpt.get("obs_keys", ["robot0_eef_pos", "robot0_eef_quat", "robot0_gripper_qpos", "object"])
-    action_per_step = action_dim // cfg["pred_horizon"]
+    pred_horizon = cfg["pred_horizon"]
+    action_per_step = action_dim // pred_horizon
+    exec_horizon = args.exec_horizon if args.exec_horizon is not None else pred_horizon
+    exec_horizon = max(1, min(exec_horizon, pred_horizon))
 
     env = make_env_from_hdf5(cfg["data_path"], reward_shaping=False, render=args.render)
 
@@ -78,9 +81,9 @@ def evaluate(args):
 
             action_norm = policy.ddim_sample(obs_norm, n_steps=args.ddim_steps)
             action_flat = action_normalizer.unnormalize(action_norm).squeeze(0).cpu().numpy()
-            actions = action_flat.reshape(cfg["pred_horizon"], action_per_step)
+            actions = action_flat.reshape(pred_horizon, action_per_step)
 
-            for a in actions:
+            for a in actions[:exec_horizon]:
                 a = np.clip(a, -1, 1)
                 obs_dict, reward, done, info = env.step(a)
                 ep_reward += reward
@@ -104,6 +107,10 @@ if __name__ == "__main__":
     parser.add_argument("--task", type=str, default="lift")
     parser.add_argument("--n_episodes", type=int, default=20)
     parser.add_argument("--ddim_steps", type=int, default=10)
+    parser.add_argument("--exec_horizon", type=int, default=None,
+                        help="actions to execute per chunk before resampling. "
+                             "Defaults to pred_horizon (open-loop chunks). Set lower "
+                             "for tighter closed-loop control.")
     parser.add_argument("--render", action="store_true")
     args = parser.parse_args()
     evaluate(args)

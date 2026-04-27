@@ -1,0 +1,19 @@
+task: transport
+bc_checkpoint: /home/abhi/dsrl/checkpoints/bc/transport/state_3000.pt
+demo_data_path: /home/abhi/dsrl/datasets/transport/ph/low_dim_v141.hdf5
+save_dir: checkpoints/wm/transport
+
+n_envs: 8
+rollout_episodes: 128
+ddim_steps: 10
+horizon: 700
+
+hidden_dims: [512, 512, 512]
+lr: 3.0e-4
+batch_size: 256
+steps: 8000
+log_every: 500
+
+reward_weight: 1.0
+done_weight: 1.0
+done_pos_weight: 20.0

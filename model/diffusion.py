@@ -56,6 +56,14 @@ class DiffusionPolicy(nn.Module):
         pred_noise = self.model(noisy_action, obs, t)
         return nn.functional.mse_loss(pred_noise, noise)
 
+    def training_loss_per_sample(self, action, obs):
+        batch_size = action.shape[0]
+        t = torch.randint(0, self.n_timesteps, (batch_size,), device=action.device)
+        noise = torch.randn_like(action)
+        noisy_action, _ = self.q_sample(action, t, noise)
+        pred_noise = self.model(noisy_action, obs, t)
+        return ((pred_noise - noise) ** 2).mean(dim=-1)
+
     @torch.no_grad()
     def ddim_sample(self, obs, n_steps=10, use_ema=True):
         model = self.ema_model if use_ema else self.model

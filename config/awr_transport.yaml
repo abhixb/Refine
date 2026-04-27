@@ -1,0 +1,35 @@
+task: transport
+bc_checkpoint: /home/abhi/dsrl/checkpoints/bc/transport/state_3000.pt
+demo_data_path: /home/abhi/dsrl/datasets/transport/ph/low_dim_v141.hdf5
+save_dir: checkpoints/awr/transport
+
+ddim_steps: 10
+horizon: 700
+
+n_envs: 8
+iterations: 200
+rollouts_per_iter: 32
+eval_every: 10
+eval_episodes: 20
+save_every: 10
+
+gamma: 0.99
+gae_lambda: 0.95
+
+critic_hidden: [512, 512, 512]
+critic_lr: 3.0e-4
+critic_steps: 200
+critic_batch_size: 256
+
+policy_lr: 5.0e-6
+policy_steps: 100
+policy_batch_size: 256
+demo_frac: 0.5
+critic_warmup_iters: 3
+
+beta: 1.0
+weight_clip: 20.0
+advantage_norm: std
+positive_adv_only: true
+
+ema_decay: 0.995
